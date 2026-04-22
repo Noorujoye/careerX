@@ -181,7 +181,7 @@ function ATSScore() {
               </div>
 
               <div>
-                <h4 className="text-2xl font-semibold text-green-800 mb-4">Job Description (optional)</h4>
+                <h4 className="text-2xl font-semibold text-green-800  mb-4">Job Description (optional)</h4>
                 <textarea
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
