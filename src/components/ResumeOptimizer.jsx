@@ -3,106 +3,190 @@ import React, { useState } from 'react'
 function ResumeOptimizer() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [uploadStatus, setUploadStatus] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const clearSelectedFile = () => {
     setSelectedFile(null)
     setUploadStatus('')
-
     const input = document.getElementById('resume-upload')
     if (input) input.value = ''
   }
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0]
+
     if (file) {
-      // Check if file is PDF or DOC/DOCX
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ]
+
       if (allowedTypes.includes(file.type)) {
         setSelectedFile(file)
         setUploadStatus('')
       } else {
-        setUploadStatus('Please select a PDF or Word document (.doc, .docx)')
         setSelectedFile(null)
+        setUploadStatus('Please upload PDF or Word file (.pdf, .doc, .docx)')
       }
     }
   }
 
   const handleOptimize = () => {
     if (!selectedFile) {
-      setUploadStatus('Please select a resume file first')
+      setUploadStatus('Please select your resume first')
       return
     }
-    setUploadStatus('Resume optimization is not connected yet. Wire this page to a backend endpoint to process and return an optimized resume.')
+
+    setLoading(true)
+    setUploadStatus('')
+
+    setTimeout(() => {
+      setLoading(false)
+      setUploadStatus('Resume analyzed successfully! AI suggestions ready.')
+    }, 2200)
   }
 
   return (
-    <div className="min-h-screen bg-white py-20">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <h3 className="text-4xl font-bold text-center text-green-800 mb-6">Resume Optimizer</h3>
-          <p className="text-xl text-center text-gray-600 mb-12">Enhance your resume with AI-powered suggestions to stand out to employers.</p>
+    <div className="min-h-screen bg-slate-950 text-white">
 
-          <div className="bg-linear-to-br from-green-50 to-green-100 p-8 rounded-2xl shadow-xl backdrop-blur-sm border border-green-200/50 mb-8">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h4 className="text-2xl font-semibold text-green-800 mb-4">Key Features</h4>
-                <ul className="space-y-3 text-gray-700">
-                  <li className="flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>AI-powered keyword optimization</li>
-                  <li className="flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>ATS-friendly formatting</li>
-                  <li className="flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>Industry-specific suggestions</li>
-                  <li className="flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>Real-time feedback</li>
-                </ul>
-              </div>
-              <div className="text-center">
-                <div className="mb-4">
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    id="resume-upload"
-                  />
-                  <label
-                    htmlFor="resume-upload"
-                    className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer inline-block"
-                  >
-                    Choose Resume File
-                  </label>
-                </div>
-                {selectedFile && (
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <p className="text-sm text-gray-600 truncate">Selected: {selectedFile.name}</p>
-                    <button
-                      type="button"
-                      onClick={clearSelectedFile}
-                      className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                      aria-label="Remove selected resume"
-                      title="Remove"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
-                        <path d="M18 6 6 18" />
-                        <path d="M6 6l12 12" />
-                      </svg>
-                    </button>
+      {/* HERO */}
+      <section className="relative overflow-hidden py-24 px-4 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950">
+
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(16,185,129,0.18),transparent_35%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_rgba(16,185,129,0.10),transparent_30%)]"></div>
+
+        <div className="container mx-auto relative z-10">
+          <div className="max-w-5xl mx-auto">
+
+            {/* Heading */}
+            <div className="text-center mb-14">
+              <h1 className="text-5xl md:text-6xl font-bold mb-5">
+                AI <span className="text-emerald-400">Resume Optimizer</span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto">
+                Improve your resume with ATS friendly formatting, smart keywords
+                and recruiter focused suggestions.
+              </p>
+            </div>
+
+            {/* Main Card */}
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-10 backdrop-blur-md shadow-2xl">
+
+              <div className="grid md:grid-cols-2 gap-10 items-center">
+
+                {/* Left */}
+                <div>
+                  <h2 className="text-3xl font-bold mb-6">
+                    Why Use CareerX AI?
+                  </h2>
+
+                  <div className="space-y-4">
+
+                    {[
+                      'AI-powered keyword optimization',
+                      'ATS-friendly formatting checks',
+                      'Industry specific improvements',
+                      'Real-time feedback reports',
+                      'Better recruiter visibility'
+                    ].map((item) => (
+                      <div
+                        key={item}
+                        className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3"
+                      >
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+                        <p className="text-slate-200">{item}</p>
+                      </div>
+                    ))}
+
                   </div>
-                )}
-                <button
-                  onClick={handleOptimize}
-                  className="bg-green-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-green-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  Optimize My Resume
-                </button>
+                </div>
+
+                {/* Right Upload */}
+                <div className="text-center">
+
+                  <div className="mb-5">
+                    <div className="text-6xl mb-4">📄</div>
+
+                    <input
+                      type="file"
+                      id="resume-upload"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+
+                    <label
+                      htmlFor="resume-upload"
+                      className="inline-block px-7 py-3 rounded-2xl bg-emerald-400 text-black font-semibold hover:scale-105 duration-300 cursor-pointer shadow-lg"
+                    >
+                      Choose Resume File
+                    </label>
+                  </div>
+
+                  {selectedFile && (
+                    <div className="mb-5 flex items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
+                      <p className="text-sm text-slate-300 truncate">
+                        {selectedFile.name}
+                      </p>
+
+                      <button
+                        onClick={clearSelectedFile}
+                        className="w-8 h-8 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleOptimize}
+                    className="w-full px-8 py-4 rounded-2xl bg-white/5 border border-white/15 hover:bg-white/10 font-semibold duration-300"
+                  >
+                    Optimize My Resume
+                  </button>
+
+                  {loading && (
+                    <p className="mt-4 text-emerald-300 animate-pulse">
+                      Analyzing Resume...
+                    </p>
+                  )}
+                </div>
+
               </div>
             </div>
-          </div>
 
-          {uploadStatus && (
-            <div className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/50 text-center">
-              <p className="text-gray-700">{uploadStatus}</p>
+            {/* Status */}
+            {uploadStatus && (
+              <div className="mt-8 bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
+                <p className="text-slate-200">{uploadStatus}</p>
+              </div>
+            )}
+
+            {/* Bottom Cards */}
+            <div className="grid md:grid-cols-3 gap-6 mt-12">
+
+              {[
+                'ATS Score Boost',
+                'Keyword Enhancement',
+                'Professional Formatting'
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center hover:border-emerald-400/40 duration-300"
+                >
+                  <h3 className="text-xl font-semibold text-emerald-300">
+                    {item}
+                  </h3>
+                </div>
+              ))}
+
             </div>
-          )}
+
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

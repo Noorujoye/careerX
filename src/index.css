@@ -55,3 +55,239 @@
 .animation-delay-600 {
   animation-delay: 0.6s;
 }
+
+/* Circular progress animation */
+@keyframes circular-progress {
+  from {
+    stroke-dashoffset: var(--circumference, 314);
+  }
+  to {
+    stroke-dashoffset: var(--stroke-dashoffset, 0);
+  }
+}
+
+.animate-circular-progress {
+  animation: circular-progress 1.2s ease-out forwards;
+}
+
+/* Pulse glow for high scores */
+@keyframes pulse-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 18px rgba(16, 185, 129, 0.7));
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Card hover lift */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+/* Stagger children */
+@keyframes slide-up-card {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-children > * {
+  opacity: 0;
+  animation: slide-up-card 0.5s ease-out forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* Gradient border utility */
+.gradient-border-green {
+  position: relative;
+}
+.gradient-border-green::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, #10b981, #059669, #047857);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Upload zone drag states */
+.upload-zone {
+  transition: all 0.3s ease;
+}
+.upload-zone.drag-over {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  transform: scale(1.01);
+}
+
+/* Smooth result panel entrance */
+.result-panel {
+  animation: slide-up-card 0.6s ease-out forwards;
+}
+
+/* Score ring responsive sizing */
+.score-ring {
+  --circumference: 283;
+  --stroke-dashoffset: 0;
+}
+
+/* Keyword tag hover lift */
+.keyword-tag {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.keyword-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Progress bar smooth fill */
+.progress-fill {
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.dark .glass-card {
+  background: rgba(17, 24, 39, 0.85);
+  border-color: rgba(55, 65, 81, 0.5);
+}
+
+/* === NEW ATS PAGE ANIMATIONS === */
+
+/* Shimmer sweep for buttons/accents */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Floating blobs */
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-delay {
+  animation: float 10s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+.animate-float-delay-2 {
+  animation: float 12s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+/* Gradient text animation */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-text {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Subtle grid background */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Dot pattern */
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Enhanced card hover */
+.card-lift {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+}
+
+/* Score ring conic glow */
+@keyframes score-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5)); }
+}
+
+.animate-score-glow {
+  animation: score-glow 3s ease-in-out infinite;
+}
+
+/* Smooth scale in */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Border shimmer for premium feel */
+@keyframes border-shimmer {
+  0% { border-color: rgba(99, 102, 241, 0.2); }
+  50% { border-color: rgba(99, 102, 241, 0.5); }
+  100% { border-color: rgba(99, 102, 241, 0.2); }
+}
+
+.animate-border-shimmer {
+  animation: border-shimmer 3s ease-in-out infinite;
+}
+
+/* Check mark draw */
+@keyframes draw-check {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-draw-check {
+  stroke-dasharray: 24;
+  animation: draw-check 0.4s ease-out forwards;
+}

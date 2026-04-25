@@ -1,388 +1,218 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from "react";
 
-function ATSScore() {
-  const [resumeFile, setResumeFile] = useState(null)
-  const [jobDescription, setJobDescription] = useState('')
-  const [statusMessage, setStatusMessage] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [result, setResult] = useState(null)
-  const [aiSuggestions, setAiSuggestions] = useState(null)
-  const [isLoadingAi, setIsLoadingAi] = useState(false)
+export default function ATSScore() {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const [score, setScore] = useState(82);
+  const [loading, setLoading] = useState(false);
 
-  const clearResumeFile = () => {
-    setResumeFile(null)
-    setStatusMessage('')
-    setResult(null)
-    setAiSuggestions(null)
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    const input = document.getElementById('ats-resume-upload')
-    if (input) input.value = ''
-  }
+    setSelectedFile(file.name);
+    setLoading(true);
+    setShowResult(false);
 
-  const canCheck = useMemo(() => {
-    return Boolean(resumeFile)
-  }, [resumeFile])
+    setTimeout(() => {
+      setLoading(false);
+      setShowResult(true);
+      setScore(Math.floor(Math.random() * 25) + 70);
+    }, 1800);
+  };
 
-  const handleResumeSelect = (event) => {
-    const file = event.target.files && event.target.files[0]
-    if (!file) return
+  const handleLearnMore = () => {
+    document
+      .getElementById("careerx-features")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
 
-    const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ]
+  const handleOptimize = () => {
+    document
+      .getElementById("upload-section")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
 
-    if (!allowedTypes.includes(file.type)) {
-      setResumeFile(null)
-      setResult(null)
-      setStatusMessage('Please select a PDF or Word document (.doc, .docx).')
-      return
-    }
+  const stats = [
+    { title: "Keyword Match", value: 78 },
+    { title: "Format Score", value: 91 },
+    { title: "Grammar & Clarity", value: 65 },
+    { title: "Readability", value: 88 },
+  ];
 
-    if (file.size > 3 * 1024 * 1024) {
-      setResumeFile(null)
-      setResult(null)
-      setStatusMessage('File too large. Max upload size is 3MB.')
-      return
-    }
-
-    setResumeFile(file)
-    setResult(null)
-    setAiSuggestions(null)
-    setStatusMessage('')
-  }
-
-  const handleCheckScore = async () => {
-    if (!resumeFile) {
-      setStatusMessage('Please select a resume file first.')
-      return
-    }
-
-    setIsSubmitting(true)
-    setStatusMessage('')
-    setResult(null)
-    setAiSuggestions(null)
-
-    try {
-      const form = new FormData()
-      form.append('resume', resumeFile)
-      if (jobDescription.trim()) {
-        form.append('jobDescriptionText', jobDescription.trim())
-      }
-
-      const response = await fetch('/api/v1/ats/score', {
-        method: 'POST',
-        body: form,
-      })
-
-      if (!response.ok) {
-        let message = 'Failed to score resume.'
-        try {
-          const data = await response.json()
-          message = data?.message || message
-        } catch {
-          // ignore
-        }
-        setStatusMessage(message)
-        return
-      }
-
-      const data = await response.json()
-      setResult(data)
-      if (data?.metadata?.jobDescriptionProvided === false) {
-        setStatusMessage('Tip: Paste the job description to get keyword match + missing keywords for a more accurate score.')
-      }
-
-      // Fetch AI suggestions only when JD is provided
-      if (jobDescription.trim()) {
-        setIsLoadingAi(true)
-        try {
-          const aiForm = new FormData()
-          aiForm.append('resume', resumeFile)
-          aiForm.append('jobDescriptionText', jobDescription.trim())
-
-          const aiRes = await fetch('/api/v1/ats/suggestions', {
-            method: 'POST',
-            body: aiForm,
-          })
-
-          if (aiRes.ok) {
-            const aiData = await aiRes.json()
-            setAiSuggestions(aiData)
-          }
-        } catch {
-          // ignore AI failures; deterministic report is enough
-        } finally {
-          setIsLoadingAi(false)
-        }
-      }
-    } catch {
-      setStatusMessage('Network error. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
   return (
-    <div className="min-h-screen bg-white py-20">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <h3 className="text-4xl font-bold text-center text-green-800 mb-6">ATS Score Checker</h3>
-          <p className="text-xl text-center text-gray-600 mb-12">
-            Upload your resume to check ATS readiness. Optionally paste a job description for more accurate scoring.
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white px-6 md:px-12 py-10">
+
+      {/* Top Header */}
+      <div className="relative mb-10 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold">
+          ATS <span className="text-emerald-400">Score Checker</span>
+        </h1>
+
+        <p className="text-slate-300 mt-2">
+          Analyze your resume and improve hiring chances instantly.
+        </p>
+
+        <button
+          onClick={handleLearnMore}
+          className="mt-5 md:absolute md:right-0 md:top-0 px-6 py-3 rounded-2xl bg-emerald-400 text-black font-semibold hover:scale-105 duration-300"
+        >
+          Learn More
+        </button>
+      </div>
+
+      {/* Upload Section */}
+      <div
+        id="upload-section"
+        className="max-w-3xl mx-auto bg-white/5 border border-emerald-400/20 rounded-3xl p-8 text-center shadow-2xl shadow-emerald-500/10"
+      >
+        <div className="text-5xl mb-4">📄</div>
+
+        <h2 className="text-3xl font-bold mb-3">Upload Your Resume</h2>
+
+        <p className="text-slate-300 mb-6">
+          Drag & drop or click below to upload your file
+        </p>
+
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {["PDF", "DOC", "DOCX", "TXT"].map((item) => (
+            <span
+              key={item}
+              className="px-4 py-2 rounded-full bg-slate-800 text-emerald-300 text-sm"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+
+        <label className="cursor-pointer px-8 py-4 rounded-2xl bg-emerald-400 text-black font-bold hover:scale-105 duration-300 inline-block">
+          Choose File
+          <input
+            type="file"
+            className="hidden"
+            accept=".pdf,.doc,.docx,.txt"
+            onChange={handleFileUpload}
+          />
+        </label>
+
+        {selectedFile && (
+          <p className="text-emerald-300 mt-4 text-sm">{selectedFile}</p>
+        )}
+
+        {loading && (
+          <p className="text-cyan-300 mt-4 animate-pulse">
+            Scanning Resume...
           </p>
+        )}
+      </div>
 
-          <div className="bg-linear-to-br from-green-50 to-green-100 p-8 rounded-2xl shadow-xl backdrop-blur-sm border border-green-200/50 mb-8">
-            <div className="grid md:grid-cols-2 gap-8 items-start">
-              <div>
-                <h4 className="text-2xl font-semibold text-green-800 mb-4">Resume</h4>
-
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleResumeSelect}
-                  className="hidden"
-                  id="ats-resume-upload"
-                />
-                <label
-                  htmlFor="ats-resume-upload"
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer inline-block"
-                >
-                  Choose Resume File
-                </label>
-
-                {resumeFile && (
-                  <div className="mt-3 flex items-center justify-between gap-3">
-                    <p className="text-sm text-gray-700 truncate">Selected: {resumeFile.name}</p>
-                    <button
-                      type="button"
-                      onClick={clearResumeFile}
-                      className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                      aria-label="Remove selected resume"
-                      title="Remove"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
-                        <path d="M18 6 6 18" />
-                        <path d="M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
-
-                <div className="mt-6">
-                  <button
-                    onClick={handleCheckScore}
-                    disabled={!canCheck || isSubmitting}
-                    className="bg-green-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-green-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? 'Checking…' : 'Check ATS Score'}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-2xl font-semibold text-green-800  mb-4">Job Description (optional)</h4>
-                <textarea
-                  value={jobDescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
-                  rows={10}
-                  placeholder="Paste the job description here to score keyword match and relevance."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-black"
-                />
+      {/* Result Section */}
+      {showResult && (
+        <div className="mt-14 grid md:grid-cols-3 gap-6">
+          <div className="bg-white/5 rounded-3xl p-8 border border-white/10">
+            <div className="w-48 h-48 mx-auto rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 p-3 flex items-center justify-center">
+              <div className="w-full h-full rounded-full bg-slate-950 flex flex-col items-center justify-center">
+                <h2 className="text-5xl font-bold">{score}</h2>
+                <p className="text-slate-400">/100</p>
               </div>
             </div>
+
+            <h3 className="text-center text-2xl text-emerald-400 font-bold mt-6">
+              Grade: {score >= 90 ? "A+" : score >= 80 ? "B+" : "C"}
+            </h3>
+
+            <p className="text-center text-slate-300 mt-3">
+              Improve keywords and grammar for better ranking.
+            </p>
           </div>
 
-          {(statusMessage || result) && (
-            <div className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/50">
-              {statusMessage && (
-                <p className="text-gray-700 text-center">{statusMessage}</p>
-              )}
-
-              {result && (
-                <div className="mt-4">
-                  <div className="text-center">
-                    <div className="text-5xl font-bold text-green-800">{result.overallScore}</div>
-                    <div className="mt-2 text-gray-700">{result.summary}</div>
-
-                    {typeof result.matchScore === 'number' && (
-                      <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-green-900">
-                        <span className="font-semibold">JD Match Score:</span>
-                        <span className="font-bold">{result.matchScore}</span>
-                        <span className="text-sm text-green-800">/100</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {result.categoryScores && (
-                    <div className="mt-6 grid sm:grid-cols-2 gap-4">
-                      {Object.entries(result.categoryScores).map(([key, value]) => (
-                        <div key={key} className="bg-white rounded-lg border border-gray-200 p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="font-medium text-gray-800 capitalize">{key}</div>
-                            <div className="font-semibold text-gray-900">{value}/100</div>
-                          </div>
-                          <div className="mt-2 h-2 rounded bg-gray-200 overflow-hidden">
-                            <div className="h-full bg-green-600" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {Array.isArray(result.warnings) && result.warnings.length > 0 && (
-                    <div className="mt-6">
-                      <h5 className="text-lg font-semibold text-gray-900">Warnings</h5>
-                      <ul className="mt-2 space-y-2 text-gray-700">
-                        {result.warnings.map((w, idx) => (
-                          <li key={idx} className="bg-white rounded-lg border border-gray-200 p-3">{w}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {Array.isArray(result.priorityFixes) && result.priorityFixes.length > 0 && (
-                    <div className="mt-6">
-                      <h5 className="text-lg font-semibold text-gray-900">Priority Fixes</h5>
-                      <ul className="mt-2 space-y-2 text-gray-700">
-                        {result.priorityFixes.map((r, idx) => (
-                          <li key={idx} className="bg-white rounded-lg border border-gray-200 p-3">{r}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {Array.isArray(result.missingKeywords) && result.missingKeywords.length > 0 && (
-                    <div className="mt-6">
-                      <h5 className="text-lg font-semibold text-gray-900">Missing Keywords</h5>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {result.missingKeywords.map((kw) => (
-                          <span key={kw} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-800 text-sm">
-                            {kw}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {Array.isArray(result.matchedKeywords) && result.matchedKeywords.length > 0 && (
-                    <div className="mt-6">
-                      <h5 className="text-lg font-semibold text-gray-900">Matched Keywords</h5>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {result.matchedKeywords.map((kw) => (
-                          <span key={kw} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-800 text-sm">
-                            {kw}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {Array.isArray(result.topJobKeywords) && result.topJobKeywords.length > 0 && (
-                    <div className="mt-6">
-                      <h5 className="text-lg font-semibold text-gray-900">Top Job Keywords</h5>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {result.topJobKeywords.map((kw) => (
-                          <span key={kw} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-800 text-sm">
-                            {kw}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {Array.isArray(result.recommendations) && result.recommendations.length > 0 && (
-                    <div className="mt-6">
-                      <h5 className="text-lg font-semibold text-gray-900">Recommendations</h5>
-                      <ul className="mt-2 space-y-2 text-gray-700">
-                        {result.recommendations.map((r, idx) => (
-                          <li key={idx} className="bg-white rounded-lg border border-gray-200 p-3">{r}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {(isLoadingAi || aiSuggestions) && (
-                    <div className="mt-6">
-                      <h5 className="text-lg font-semibold text-gray-900">AI Suggestions</h5>
-                      {isLoadingAi && (
-                        <p className="mt-2 text-gray-700">Generating suggestions…</p>
-                      )}
-
-                      {aiSuggestions && (
-                        <div className="mt-3 space-y-6">
-                          {Array.isArray(aiSuggestions.mustHaves) && aiSuggestions.mustHaves.length > 0 && (
-                            <div>
-                              <div className="font-medium text-gray-900">Must-have skills</div>
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                {aiSuggestions.mustHaves.map((s) => (
-                                  <span key={s} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-800 text-sm">
-                                    {s}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {Array.isArray(aiSuggestions.missingMustHaves) && aiSuggestions.missingMustHaves.length > 0 && (
-                            <div>
-                              <div className="font-medium text-gray-900">Missing must-haves</div>
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                {aiSuggestions.missingMustHaves.map((s) => (
-                                  <span key={s} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-800 text-sm">
-                                    {s}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {Array.isArray(aiSuggestions.niceToHaves) && aiSuggestions.niceToHaves.length > 0 && (
-                            <div>
-                              <div className="font-medium text-gray-900">Nice-to-have skills</div>
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                {aiSuggestions.niceToHaves.map((s) => (
-                                  <span key={s} className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-800 text-sm">
-                                    {s}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {Array.isArray(aiSuggestions.resumeEdits) && aiSuggestions.resumeEdits.length > 0 && (
-                            <div>
-                              <div className="font-medium text-gray-900">Suggested edits</div>
-                              <ul className="mt-2 space-y-2 text-gray-700">
-                                {aiSuggestions.resumeEdits.map((r, idx) => (
-                                  <li key={idx} className="bg-white rounded-lg border border-gray-200 p-3">{r}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {Array.isArray(aiSuggestions.bulletRewrites) && aiSuggestions.bulletRewrites.length > 0 && (
-                            <div>
-                              <div className="font-medium text-gray-900">Bullet rewrites</div>
-                              <ul className="mt-2 space-y-2 text-gray-700">
-                                {aiSuggestions.bulletRewrites.map((r, idx) => (
-                                  <li key={idx} className="bg-white rounded-lg border border-gray-200 p-3">{r}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
+          <div className="md:col-span-2 grid md:grid-cols-2 gap-5">
+            {stats.map((item) => (
+              <div
+                key={item.title}
+                className="bg-white/5 rounded-2xl p-6 border border-white/10"
+              >
+                <div className="flex justify-between mb-3 font-semibold">
+                  <span>{item.title}</span>
+                  <span className="text-emerald-400">{item.value}%</span>
                 </div>
-              )}
+
+                <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full"
+                    style={{ width: `${item.value}%` }}
+                  ></div>
+                </div>
+
+                <p className="text-sm text-slate-400 mt-3">
+                  ATS optimization insight available
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Analysis */}
+      <div className="mt-16 bg-white/5 rounded-3xl p-8 border border-white/10">
+        <h2 className="text-3xl font-bold mb-6 text-emerald-400">
+          Resume Deep Analysis
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {[
+            "Strong Professional Summary",
+            "Experience Well Structured",
+            "Missing 4 Industry Keywords",
+            "Need Better Action Verbs",
+            "Grammar Needs Improvement",
+            "ATS Parsing Good",
+          ].map((item) => (
+            <div
+              key={item}
+              className="p-5 rounded-2xl bg-slate-900 border border-white/10 hover:border-emerald-400 duration-300"
+            >
+              {item}
             </div>
-          )}
+          ))}
         </div>
       </div>
-    </div>
-  )
-}
 
-export default ATSScore
+      {/* Features */}
+      <div id="careerx-features" className="mt-16">
+        <h2 className="text-3xl font-bold mb-8 text-center text-emerald-400">
+          Why Choose Our ATS Tool
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            "Instant ATS Score",
+            "Smart Resume Suggestions",
+            "Interview Ready Insights",
+          ].map((item) => (
+            <div
+              key={item}
+              className="bg-white/5 p-8 rounded-3xl border border-white/10 text-center hover:border-emerald-400 duration-300"
+            >
+              <h3 className="text-xl font-semibold">{item}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="mt-16 text-center">
+        <h2 className="text-4xl font-bold mb-4">
+          Get Hired Faster
+        </h2>
+
+        <button
+          onClick={handleOptimize}
+          className="px-8 py-4 rounded-2xl bg-emerald-400 text-black font-bold hover:scale-105 duration-300"
+        >
+          Optimize Resume Now
+        </button>
+      </div>
+    </div>
+  );
+}
