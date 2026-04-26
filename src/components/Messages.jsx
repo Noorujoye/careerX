@@ -59,42 +59,72 @@ function Messages() {
   ]
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Messages</h1>
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+
+      {/* Glow Background */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500/20 blur-[140px] rounded-full"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/20 blur-[140px] rounded-full"></div>
+
+      <div className="relative z-10 container mx-auto px-4 py-8">
+
+        {/* Heading */}
+        <h1 className="text-4xl font-bold mb-8">
+          <span className="text-white">Messages</span>
+          <span className="text-emerald-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]">
+            {' '}Center
+          </span>
+        </h1>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left Sidebar */}
-          <div className="w-full lg:w-64 bg-white rounded-lg shadow-md p-4">
-            <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible">
+
+          {/* Sidebar */}
+          <div className="w-full lg:w-72 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_0_30px_rgba(16,185,129,0.08)] p-4">
+
+            <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible">
+
               {tabs.map((tab) => (
                 <div key={tab.id} className="shrink-0">
-                <button
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'bg-green-100 text-green-800'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <tab.Icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
-                </button>
+                  <button
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl transition-all whitespace-nowrap font-medium ${
+                      activeTab === tab.id
+                        ? 'bg-emerald-400 text-black shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+                        : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <tab.Icon className="w-5 h-5" />
+                    <span>{tab.label}</span>
+                  </button>
                 </div>
               ))}
+
             </div>
           </div>
 
-          {/* Main Content Area */}
-          <div className="flex-1 bg-white rounded-lg shadow-md p-6">
-            <div className="text-center text-gray-500">
-              <div className="flex justify-center mb-4 text-gray-400">
-                <IconEmptyChat className="w-16 h-16" />
+          {/* Main Content */}
+          <div className="flex-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_0_30px_rgba(16,185,129,0.08)] p-10 flex items-center justify-center">
+
+            <div className="text-center">
+
+              <div className="flex justify-center mb-5 text-emerald-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]">
+                <IconEmptyChat className="w-20 h-20" />
               </div>
-              <h2 className="text-xl font-semibold mb-2">No messages yet</h2>
-              <p>When you receive messages, they'll appear here.</p>
+
+              <h2 className="text-2xl font-bold mb-3 text-white">
+                No messages yet
+              </h2>
+
+              <p className="text-slate-400 max-w-md">
+                When recruiters, companies or users send messages, they’ll appear here instantly.
+              </p>
+
+              <button className="mt-6 px-8 py-3 rounded-2xl bg-emerald-400 text-black font-bold hover:scale-105 duration-300 shadow-[0_0_20px_rgba(16,185,129,0.5)]">
+                Explore Jobs
+              </button>
+
             </div>
           </div>
+
         </div>
       </div>
     </div>

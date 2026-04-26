@@ -8,7 +8,6 @@ function Settings({ isOpen, onClose }) {
     fontSize: 'medium'
   })
 
-  // Load settings from localStorage on component mount
   useEffect(() => {
     const savedSettings = localStorage.getItem('careerxai-settings')
     if (savedSettings) {
@@ -16,11 +15,9 @@ function Settings({ isOpen, onClose }) {
     }
   }, [])
 
-  // Save settings to localStorage whenever settings change
   useEffect(() => {
     localStorage.setItem('careerxai-settings', JSON.stringify(settings))
 
-    // Apply dark mode
     if (settings.darkMode) {
       document.documentElement.classList.add('dark')
     } else {
@@ -29,127 +26,160 @@ function Settings({ isOpen, onClose }) {
   }, [settings])
 
   const handleSettingChange = (setting, value) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [setting]: value
     }))
   }
 
+  const resetSettings = () => {
+    const defaultSettings = {
+      darkMode: false,
+      notifications: true,
+      language: 'en',
+      fontSize: 'medium'
+    }
+
+    setSettings(defaultSettings)
+  }
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-green-800 dark:text-green-400">Settings</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
-            >
-              ×
-            </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4">
+
+      {/* Glow Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(16,185,129,0.15),transparent_35%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_rgba(16,185,129,0.10),transparent_30%)]"></div>
+
+      {/* Modal */}
+      <div className="relative z-10 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 bg-slate-950/90 backdrop-blur-xl shadow-2xl">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+          <h2 className="text-2xl font-bold text-white">
+            Settings <span className="text-emerald-400">Panel</span>
+          </h2>
+
+          <button
+            onClick={onClose}
+            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xl"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 space-y-5">
+
+          {/* Dark Mode */}
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-white">Dark Mode</h3>
+              <p className="text-sm text-slate-400">
+                Toggle between light and dark theme
+              </p>
+            </div>
+
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                checked={settings.darkMode}
+                onChange={(e) =>
+                  handleSettingChange('darkMode', e.target.checked)
+                }
+                className="sr-only peer"
+              />
+
+              <div className="w-12 h-7 rounded-full bg-slate-700 peer-checked:bg-emerald-500 after:content-[''] after:absolute after:left-1 after:top-1 after:w-5 after:h-5 after:bg-white after:rounded-full after:transition-all peer-checked:after:translate-x-5"></div>
+            </label>
           </div>
 
-          <div className="space-y-6">
-            {/* Dark Mode Toggle */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <h3 className="font-semibold text-gray-800 dark:text-gray-200">Dark Mode</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Toggle between light and dark themes</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.darkMode}
-                  onChange={(e) => handleSettingChange('darkMode', e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-              </label>
+          {/* Notifications */}
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-white">Notifications</h3>
+              <p className="text-sm text-slate-400">
+                Receive alerts and reminders
+              </p>
             </div>
 
-            {/* Notifications Toggle */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <h3 className="font-semibold text-gray-800 dark:text-gray-200">Notifications</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Receive updates and reminders</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.notifications}
-                  onChange={(e) => handleSettingChange('notifications', e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-              </label>
-            </div>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                checked={settings.notifications}
+                onChange={(e) =>
+                  handleSettingChange('notifications', e.target.checked)
+                }
+                className="sr-only peer"
+              />
 
-            {/* Language Selection */}
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Language</h3>
-              <select
-                value={settings.language}
-                onChange={(e) => handleSettingChange('language', e.target.value)}
-                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="fr">Français</option>
-                <option value="de">Deutsch</option>
-                <option value="hi">हिन्दी</option>
-              </select>
-            </div>
+              <div className="w-12 h-7 rounded-full bg-slate-700 peer-checked:bg-emerald-500 after:content-[''] after:absolute after:left-1 after:top-1 after:w-5 after:h-5 after:bg-white after:rounded-full after:transition-all peer-checked:after:translate-x-5"></div>
+            </label>
+          </div>
 
-            {/* Font Size Selection */}
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Font Size</h3>
-              <select
-                value={settings.fontSize}
-                onChange={(e) => handleSettingChange('fontSize', e.target.value)}
-                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
-              </select>
-            </div>
+          {/* Language */}
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <h3 className="font-semibold text-white mb-3">Language</h3>
 
-            {/* Account Settings */}
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Account</h3>
-              <div className="space-y-2">
-                <button className="w-full text-left p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors">
-                  Change Password
-                </button>
-                <button className="w-full text-left p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors">
-                  Privacy Settings
-                </button>
-                <button className="w-full text-left p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors">
-                  Data Export
-                </button>
-              </div>
-            </div>
+            <select
+              value={settings.language}
+              onChange={(e) =>
+                handleSettingChange('language', e.target.value)
+              }
+              className="w-full px-4 py-3 rounded-2xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-emerald-400"
+            >
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+            </select>
+          </div>
 
-            {/* Reset Settings */}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
-              <button
-                onClick={() => {
-                  const defaultSettings = {
-                    darkMode: false,
-                    notifications: true,
-                    language: 'en',
-                    fontSize: 'medium'
-                  }
-                  setSettings(defaultSettings)
-                }}
-                className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors"
-              >
-                Reset to Defaults
+          {/* Font Size */}
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <h3 className="font-semibold text-white mb-3">Font Size</h3>
+
+            <select
+              value={settings.fontSize}
+              onChange={(e) =>
+                handleSettingChange('fontSize', e.target.value)
+              }
+              className="w-full px-4 py-3 rounded-2xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-emerald-400"
+            >
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
+            </select>
+          </div>
+
+          {/* Account */}
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <h3 className="font-semibold text-white mb-4">Account</h3>
+
+            <div className="space-y-2">
+              <button className="w-full text-left px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300">
+                Change Password
+              </button>
+
+              <button className="w-full text-left px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300">
+                Privacy Settings
+              </button>
+
+              <button className="w-full text-left px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300">
+                Data Export
               </button>
             </div>
           </div>
+
+          {/* Reset */}
+          <button
+            onClick={resetSettings}
+            className="w-full py-3 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-semibold transition"
+          >
+            Reset to Defaults
+          </button>
         </div>
       </div>
     </div>
